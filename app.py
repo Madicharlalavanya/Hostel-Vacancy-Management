@@ -21,34 +21,52 @@ class Home:
     def __init__(self, root):
         self.root = root
         self.root.title("Hostel Management")
-        self.root.geometry("1300x500+200+140")
-        self.root.resizable(False, False)
+        self.root.geometry("1250x500+200+140")
+        self.root.resizable(True,True)
 
         
         self.home_frame = Frame(self.root, bg='Alice Blue')
         self.home_frame.pack(fill='both', expand=True)
 
-        # College Logo
-        logo_image = Image.open("C:\\Users\\lenovo\\Desktop\\HostelVacancy\\download.png")
-        logo_image = logo_image.resize((150, 150), Image.LANCZOS)
-        self.logo_photo = ImageTk.PhotoImage(logo_image)
-        logo_label = Label(self.home_frame, image=self.logo_photo, bg='Alice Blue')
-        logo_label.pack(pady=10)
+        # College Logo and Info Frame
+        # College Logo and Info Frame (Placed Lower & Centered)
+        logo_info_frame = Frame(self.home_frame, bg='Alice Blue')
+        logo_info_frame.place(relx=0.5, rely=0.3, anchor="center")  # Center it lower on the frame
 
-        # College Name
-        college_label = Label(self.home_frame, text='SHRI VISHNU ENGINEERING COLLEGE FOR WOMEN\n BHIMAVARAM',
-                              font=('Calibri', 24, 'bold'), bg='Alice Blue', fg='Steel Blue')
-        college_label.pack(pady=10)
+        # Vishnu Logo (Left Side)
+        logo_image = Image.open("C:\\Users\\lenovo\\Desktop\\HostelVacancy\\vishnu_logo.png")
+        logo_image = logo_image.resize((120, 120), Image.LANCZOS)  # Resize to maintain proportions
+        self.logo_photo = ImageTk.PhotoImage(logo_image)
+
+        logo_label = Label(logo_info_frame, image=self.logo_photo, bg='Alice Blue')
+        logo_label.grid(row=0, column=0, rowspan=2, padx=15, pady=10)  # Add spacing around the image
+
+        # College Name and Additional Info (Right Side)
+        college_label = Label(logo_info_frame, text='SHRI VISHNU ENGINEERING COLLEGE FOR WOMEN',
+                            font=('Calibri', 22, 'bold'), bg='Alice Blue', fg='Steel Blue')
+        college_label.grid(row=0, column=1, sticky='w', padx=10)
+
+        additional_info = Label(logo_info_frame, text='Autonomous | Bhimavaram\nContact: info@svecw.edu.in',
+                                font=('Calibri', 14), bg='Alice Blue', fg='Steel Blue')
+        additional_info.grid(row=1, column=1, sticky='w', padx=10)
+
 
         
         # Login Buttons
-        self.student_login_btn = Button(self.home_frame, text="Student Login", font=('Calibri', 18, 'bold'),
+        # Button Frame (Centered Below Logo & Text)
+        button_frame = Frame(self.home_frame, bg='Alice Blue')
+        button_frame.place(relx=0.55, rely=0.6, anchor="center")  # Centered below text
+
+        # Student Login Button
+        self.student_login_btn = Button(button_frame, text="Student Login", font=('Calibri', 18, 'bold'),
                                         bg='Steel Blue', fg='White', width=15, command=self.show_student_login)
         self.student_login_btn.pack(pady=10)
 
-        self.admin_login_btn = Button(self.home_frame, text="Admin Login", font=('Calibri', 18, 'bold'),
-                                      bg='Steel Blue', fg='White', width=15, command=self.show_admin_login)
+        # Admin Login Button
+        self.admin_login_btn = Button(button_frame, text="Admin Login", font=('Calibri', 18, 'bold'),
+                                    bg='Steel Blue', fg='White', width=15, command=self.show_admin_login)
         self.admin_login_btn.pack(pady=10)
+
 
     def show_student_login(self):
         self.home_frame.pack_forget()
@@ -60,90 +78,164 @@ class Home:
         AdminLogin(self.root, cursor,self.home_frame)  # Now passing home_frame
 
 
+from tkinter import *
+from tkinter import messagebox
+from PIL import Image, ImageTk
+
 class StudentLogin:
     def __init__(self, root, cursor, home_frame):
         self.root = root
         self.cursor = cursor
         self.home_frame = home_frame
+        self.saved_username = ""  # To store username when going back
+
+        # Student Login Frame
         self.login_frame = Frame(self.root, bg='Steel Blue')
         self.login_frame.pack(fill='both', expand=True)
 
-        title_label = Label(self.login_frame, text='Student Login', font=font1, bg='Steel Blue', fg='White')
-        title_label.place(relx=0.5, rely=0.1, anchor='center')
+        # Centered Content Frame
+        login_content_frame = Frame(self.login_frame, bg='Steel Blue')
+        login_content_frame.place(relx=0.5, rely=0.5, anchor='center')
 
-        self.user_name_entry = Entry(self.login_frame, width=20, font=font1, bg='white', fg='Steel Blue',
-                                     highlightthickness=2, relief='ridge')
-        self.user_name_entry.place(relx=0.5, rely=0.3, anchor='center')
-        self.user_name_entry.insert(0, "Enter Username")
+        # Load and Display Student Image (Left Side)
+        img = Image.open("C:\\Users\\lenovo\\Desktop\\HostelVacancy\\student1.jpg")  # Change image path if needed
+        img = img.resize((150, 150), Image.LANCZOS)
+        self.student_photo = ImageTk.PhotoImage(img)
+
+        img_label = Label(login_content_frame, image=self.student_photo, bg='Steel Blue')
+        img_label.grid(row=0, column=0, rowspan=3, padx=20, pady=10)  # Left side image
+
+        # Login Title (Right Side)
+        title_label = Label(login_content_frame, text='Student Login', font=('Calibri', 22, 'bold'),
+                            bg='Steel Blue', fg='White')
+        title_label.grid(row=0, column=1, sticky='w', padx=10)
+
+        # Username Entry
+        self.user_name_entry = Entry(login_content_frame, width=22, font=('Calibri', 16),
+                                     bg='white', fg='Steel Blue', relief='solid', bd=2)
+        self.user_name_entry.grid(row=1, column=1, pady=5)
+        self.user_name_entry.insert(0, "Enter Student Username")
         self.user_name_entry.bind("<FocusIn>", self.clear_placeholder)
+        self.user_name_entry.bind("<Return>", lambda event: self.user_pass_entry.focus())  # Move to Password on Enter
 
-        self.user_pass_entry = Entry(self.login_frame, width=20, font=font1, bg='white', fg='Steel Blue', show="*",
-                                     highlightthickness=2, relief='ridge')
-        self.user_pass_entry.place(relx=0.5, rely=0.4, anchor='center')
+        # Password Entry
+        self.user_pass_entry = Entry(login_content_frame, width=22, font=('Calibri', 16),
+                                     bg='white', fg='Steel Blue', show="*", relief='solid', bd=2)
+        self.user_pass_entry.grid(row=2, column=1, pady=5)
         self.user_pass_entry.insert(0, "Enter Password")
         self.user_pass_entry.bind("<FocusIn>", self.clear_placeholder)
+        self.user_pass_entry.bind("<Return>", lambda event: self.check_student_login())  # Press Enter to Login
 
-        Button(self.login_frame, text='Login', fg='White', bg='Steel Blue', font=font1, relief='raised',
-               command=self.check_student_login, cursor='hand2').place(relx=0.5, rely=0.5, anchor='center')
+        # Buttons Frame (Below Inputs)
+        button_frame = Frame(login_content_frame, bg='Steel Blue')
+        button_frame.grid(row=3, column=1, pady=10)
 
-        Button(self.login_frame, text='Back', fg='White', bg='Gray', font=font1, relief='raised',
-               command=self.go_back, cursor='hand2').place(relx=0.5, rely=0.6, anchor='center')
+        # Login Button
+        self.login_btn = Button(button_frame, text='Login', fg='White', bg='Dark Blue',
+                                font=('Calibri', 16, 'bold'), relief='raised', width=10,
+                                command=self.check_student_login, cursor='hand2')
+        self.login_btn.pack(side="left", padx=5)
+
+        # Back Button
+        self.back_btn = Button(button_frame, text='Back', fg='White', bg='Gray',
+                               font=('Calibri', 16, 'bold'), relief='raised', width=10,
+                               command=self.go_back, cursor='hand2')
+        self.back_btn.pack(side="left", padx=5)
 
     def clear_placeholder(self, event):
+        """ Clears placeholder text when the user clicks on an entry field """
         event.widget.delete(0, "end")
 
     def check_student_login(self):
-        name = self.user_name_entry.get()
-        password = self.user_pass_entry.get()
+        """ Checks login credentials """
+        name = self.user_name_entry.get().strip()
+        password = self.user_pass_entry.get().strip()
 
         self.cursor.execute("SELECT * FROM student WHERE name = %s AND password = %s", (name, password))
         user = self.cursor.fetchone()
 
         if user:
-            messagebox.showinfo('WELCOME', 'WELCOME USER')
+            self.saved_username = name  # Save username
+            messagebox.showinfo('WELCOME', 'WELCOME STUDENT')
             self.login_frame.pack_forget()
-            Dashboard(self.root, admin=False, )
+            Dashboard(self.root, admin=False, student_login=self)
         else:
             messagebox.showerror('ERROR', 'Invalid Credentials')
 
     def go_back(self):
+        """ Returns to Home Page (Keeps username) """
         self.login_frame.pack_forget()
         self.home_frame.pack(fill='both', expand=True)
+
+    def clear_credentials(self):
+        """ Clears the stored user credentials (For logout) """
+        self.saved_username = ""
+        self.user_name_entry.delete(0, END)
+        self.user_pass_entry.delete(0, END)
+        self.user_name_entry.insert(0, "Enter Student Username")
+        self.user_pass_entry.insert(0, "Enter Password")
+
+
+
+
 class AdminLogin:
-    def __init__(self, root, cursor, home_frame):  # Accept home_frame
+    def __init__(self, root, cursor, home_frame):
         self.root = root
         self.cursor = cursor
-        self.home_frame = home_frame  # Store reference to home frame
+        self.home_frame = home_frame
 
         # Admin Login Frame
         self.login_frame = Frame(self.root, bg='Steel Blue')
         self.login_frame.pack(fill='both', expand=True)
 
-        # Title
-        title_label = Label(self.login_frame, text='Admin Login', font=font1, bg='Steel Blue', fg='White')
-        title_label.place(relx=0.5, rely=0.1, anchor='center')
+        # Centered Content Frame
+        login_content_frame = Frame(self.login_frame, bg='Steel Blue')
+        login_content_frame.place(relx=0.5, rely=0.5, anchor='center')
+
+        # Load and Display Admin Image (Left Side)
+        img = Image.open("C:\\Users\\lenovo\\Desktop\\HostelVacancy\\admin.jpg")  # Change image path if needed
+        img = img.resize((150, 150), Image.LANCZOS)
+        self.admin_photo = ImageTk.PhotoImage(img)
+
+        img_label = Label(login_content_frame, image=self.admin_photo, bg='Steel Blue')
+        img_label.grid(row=0, column=0, rowspan=3, padx=20, pady=10)  # Left side image
+
+        # Login Title (Right Side)
+        title_label = Label(login_content_frame, text='Admin Login', font=('Calibri', 22, 'bold'),
+                            bg='Steel Blue', fg='White')
+        title_label.grid(row=0, column=1, sticky='w', padx=10)
 
         # Username Entry
-        self.admin_user_name_entry = Entry(self.login_frame, width=20, font=font1, bg='white', fg='Steel Blue',
-                                           highlightthickness=2, relief='ridge')
-        self.admin_user_name_entry.place(relx=0.5, rely=0.3, anchor='center')
+        self.admin_user_name_entry = Entry(login_content_frame, width=22, font=('Calibri', 16),
+                                           bg='white', fg='Steel Blue', relief='solid', bd=2)
+        self.admin_user_name_entry.grid(row=1, column=1, pady=5)
         self.admin_user_name_entry.insert(0, "Enter Admin Username")
         self.admin_user_name_entry.bind("<FocusIn>", self.clear_placeholder)
+        self.admin_user_name_entry.bind("<Return>", lambda event: self.admin_user_pass_entry.focus())  # Move to Password
 
         # Password Entry
-        self.admin_user_pass_entry = Entry(self.login_frame, width=20, font=font1, bg='white', fg='Steel Blue', show="*",
-                                           highlightthickness=2, relief='ridge')
-        self.admin_user_pass_entry.place(relx=0.5, rely=0.4, anchor='center')
+        self.admin_user_pass_entry = Entry(login_content_frame, width=22, font=('Calibri', 16),
+                                           bg='white', fg='Steel Blue', show="*", relief='solid', bd=2)
+        self.admin_user_pass_entry.grid(row=2, column=1, pady=5)
         self.admin_user_pass_entry.insert(0, "Enter Password")
         self.admin_user_pass_entry.bind("<FocusIn>", self.clear_placeholder)
+        self.admin_user_pass_entry.bind("<Return>", lambda event: self.check_admin_login())  # Press Enter to Login
+
+        # Buttons Frame (Below Inputs)
+        button_frame = Frame(login_content_frame, bg='Steel Blue')
+        button_frame.grid(row=3, column=1, pady=10)
 
         # Login Button
-        Button(self.login_frame, text='Login', fg='White', bg='Steel Blue', font=font1, relief='raised',
-               command=self.check_admin_login, cursor='hand2').place(relx=0.5, rely=0.5, anchor='center')
+        self.login_btn = Button(button_frame, text='Login', fg='White', bg='Dark Blue',
+                                font=('Calibri', 16, 'bold'), relief='raised', width=10,
+                                command=self.check_admin_login, cursor='hand2')
+        self.login_btn.pack(side="left", padx=5)
 
         # Back Button
-        Button(self.login_frame, text='Back', fg='White', bg='Gray', font=font1, relief='raised',
-               command=self.go_back, cursor='hand2').place(relx=0.5, rely=0.6, anchor='center')
+        self.back_btn = Button(button_frame, text='Back', fg='White', bg='Gray',
+                               font=('Calibri', 16, 'bold'), relief='raised', width=10,
+                               command=self.go_back, cursor='hand2')
+        self.back_btn.pack(side="left", padx=5)
 
     def clear_placeholder(self, event):
         """ Clears placeholder text when the user clicks on an entry field """
@@ -162,7 +254,7 @@ class AdminLogin:
             if password == db_password:
                 messagebox.showinfo('WELCOME', 'WELCOME ADMIN')
                 self.login_frame.pack_forget()
-                Dashboard(self.root, admin=True)
+                Dashboard(self.root, admin=True)  # Load Admin Dashboard
             else:
                 messagebox.showerror('WRONG PASSWORD', 'Incorrect Password. Please try again.')
         else:
@@ -171,14 +263,13 @@ class AdminLogin:
     def go_back(self):
         """ Navigates back to the Home Page """
         self.login_frame.pack_forget()
-        self.home_frame.pack(fill='both', expand=True)  # Restore Home Page
-
-
+        self.home_frame.pack(fill='both', expand=True) 
 
 class Dashboard:
-    def __init__(self, root, admin=False):
+    def __init__(self, root, admin=False,student_login=None):
         self.root = root
         self.admin = admin
+        self.student_login=student_login
         self.clear_frame()  # Now it will work!
 
         if admin:
